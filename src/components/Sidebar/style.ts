@@ -49,6 +49,7 @@ export const Table = styled.table`
         
 
         td{
+            position: relative;
             width: 100%;
             text-align: left;
             padding:0.20rem 0.5rem;
@@ -67,6 +68,20 @@ export const Table = styled.table`
                 margin-top: 0 ;
                 margin-bottom: 0.5rem;
             }
+            button{
+            padding:0;
+            margin-top: 0;
+            position: relative;
+            width: 1rem;
+            height: 1rem;
+
+            img{
+                width: 1rem;
+                height: 1rem;
+            }
         }
+            
+        }
+        
     
 `

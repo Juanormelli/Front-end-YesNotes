@@ -10,12 +10,15 @@ export const Container = styled.div`
 
 
     h1{
-        padding: 1rem 4rem
+        border: none;
+        padding: 1rem 4rem;
+        outline: none;
     }
 
     p{ 
         text-align: justify;
         padding: 1rem 5rem;
+        outline: none;
         
 
     }
