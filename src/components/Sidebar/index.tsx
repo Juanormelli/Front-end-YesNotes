@@ -11,36 +11,52 @@ interface Notes{
     title: string;
 }
 
+interface User {
+    username: string
+
+}
+
 
 export function Sidebar(){
 
-    async function deleteNote(iduser:string){
-        
-        await api.delete("/notes/delete/a02140d2-899f-4f30-ba7e-4fc5efee4cac", {data:{id:iduser}})
-        
-        
-        
-    }
+    
 
-    async function createNote(){
-        const res = await api.post("/notes/create/a02140d2-899f-4f30-ba7e-4fc5efee4cac",{content:"Nova Nota", title:"Nota Teste"})
 
-        return console.log(res)
-    }
+    
 
     const [listNotes, setListNotes] = useState<Notes[]>([])
+    const [listUser, setUser] = useState<User>()
+
 
     useEffect( ()=>{
         
-        api.get("/notes/list/a02140d2-899f-4f30-ba7e-4fc5efee4cac").then(response => {setListNotes(response.data)}).catch(error =>{setListNotes([])})
+        api.get("/notes/list/a02140d2-899f-4f30-ba7e-4fc5efee4cac").then(response => {setListNotes(response.data)}).catch(() =>{setListNotes([]) })
         
        
-    })
+    },[])
+
+    async function createNote(){
+        const res = await api.post("/notes/create/a02140d2-899f-4f30-ba7e-4fc5efee4cac",{content:"Nova Nota", title:"Nota Teste"})
+        console.log(res)
+        setListNotes([...listNotes,res.data])
+        return 
+    }
+    async function deleteNote(iduser:string){
+        
+        await api.delete("/notes/delete/a02140d2-899f-4f30-ba7e-4fc5efee4cac", {data:{id:iduser}})
+        api.get("/notes/list/a02140d2-899f-4f30-ba7e-4fc5efee4cac").then(response => {setListNotes(response.data)}).catch(() =>{setListNotes([]) })
+        
+        
+    }
+
+    useEffect( ()=>{
+        api.post("/auth", {username:"juanlucas", password:"1234"}).then(response => {setUser(response.data)})
+    },[])
     
 
     return (
         <Container>
-            <h1>Nome do Usuario</h1>
+            <h1>{listUser?.username}</h1>
 
             <button onClick={createNote}>+ Nota Nova</button>
             <Table>
