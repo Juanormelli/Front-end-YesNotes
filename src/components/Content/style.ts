@@ -22,5 +22,14 @@ export const Container = styled.div`
         
 
     }
+    .editor{
+         
+        background-color: white;
+        text-align: justify;
+        padding: 1rem 5rem;
+        outline: none;
+        
+
+    }
 
 `

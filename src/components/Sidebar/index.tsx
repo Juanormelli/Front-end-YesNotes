@@ -19,20 +19,13 @@ interface User {
 
 export function Sidebar(){
 
-    
-
-
-    
-
     const [listNotes, setListNotes] = useState<Notes[]>([])
     const [listUser, setUser] = useState<User>()
 
 
     useEffect( ()=>{
-        
         api.get("/notes/list/a02140d2-899f-4f30-ba7e-4fc5efee4cac").then(response => {setListNotes(response.data)}).catch(() =>{setListNotes([]) })
-        
-       
+
     },[])
 
     async function createNote(){
@@ -41,6 +34,7 @@ export function Sidebar(){
         setListNotes([...listNotes,res.data])
         return 
     }
+
     async function deleteNote(iduser:string){
         
         await api.delete("/notes/delete/a02140d2-899f-4f30-ba7e-4fc5efee4cac", {data:{id:iduser}})

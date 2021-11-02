@@ -1,29 +1,89 @@
 import { Container } from "./style";
+import { ContentState, Editor, EditorState} from 'draft-js';
+import 'draft-js/dist/Draft.css';
+import { useEffect, useState } from "react";
+import {stateToHTML} from 'draft-js-export-html';
+import { api } from "../../services/api";
+import { stateFromHTML } from "draft-js-import-html";
+import { title } from "process";
+
+
+interface Note{
+    title: string;
+    id: string;
+    content: string;
+
+}
+
+function style() {
+    return "editor"
+}
+
 
 export function Content(){
+
+
+    
+
+    
+    const [notes, setNotes] = useState<Note>()
+
+    const id ="3898b4f4-f8af-47cb-9e71-1b492b99b06c"
+
+    useEffect( ()=>{
+        api.get(`/notes/list/a02140d2-899f-4f30-ba7e-4fc5efee4cac/${id}`).then(response => {setNotes(response.data)})
+        
+    },[])
+    
+  
+    let htmlContent = "Teste2"
+    htmlContent = htmlContent.toString()
+
+    let content = notes?.content===undefined ? htmlContent : notes?.content
+    
+    let note = new DOMParser()
+    
+
+    let doc = note.parseFromString(content,"text/html")
+    
+    let docS = doc.body.innerHTML.toString()
+    console.log(docS)
+    
+    
+    
+
+
+
+    const [editorState, setEditorState] = useState(
+        () => EditorState.createWithContent(stateFromHTML(docS))
+    );
+
+    useEffect( ()=>{
+        setEditorState(EditorState.createWithContent(stateFromHTML(docS)))
+    },[])
+
+    useEffect(() => {
+        const teste =editorState.getCurrentContent()
+        let htmlContent2 = stateToHTML(teste)
+        console.log(htmlContent2)
+        let htmlS = htmlContent2.toString()
+        api.post(`notes/update/${id}`,{title:"Nome da Nota", content:htmlS}).then(response=>{()=>setEditorState(EditorState.createWithContent(stateFromHTML(response.data.content)))})
+  
+
+    },[])
+
+    
+
+  
+  
+  
+    
     return (
         <Container>
-            <h1 contentEditable="true" > Nome da Nota</h1>
-            <p contentEditable="true"> 
-                <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent porttitor nisl justo, eget imperdiet dolor ullamcorper quis. Pellentesque malesuada, dolor nec dignissim facilisis, sem elit eleifend erat, ut suscipit mi lorem nec est. Nullam imperdiet sit amet ligula et consectetur. Vestibulum eu felis viverra dolor rutrum finibus. Mauris sollicitudin maximus nibh, vitae fermentum turpis interdum vitae. Nunc ut dolor sed nibh sagittis scelerisque. Nulla convallis at orci vel faucibus. In et neque lectus. Quisque tincidunt, lectus ac suscipit aliquet, dui justo pharetra sem, eget tempor eros tortor quis tellus. Duis eget leo ligula. Donec et augue a nunc pulvinar interdum id id eros.
-
-                </p>
-                <p>
-                Curabitur ac ante sodales, mattis ligula ut, tempor lorem. Proin lobortis, leo a gravida sagittis, felis nisi luctus nunc, vitae vestibulum ante sem non magna. Aliquam dapibus, est sed pellentesque lacinia, nunc ipsum ullamcorper lorem, sit amet iaculis nibh arcu eget turpis. Aliquam eleifend ligula dolor, pretium molestie elit finibus at. Fusce fermentum, arcu eget varius rutrum, orci nisl sollicitudin sapien, et convallis elit ligula in quam. Etiam iaculis condimentum tincidunt. Vivamus neque lectus, interdum id viverra in, malesuada a ante. Sed tempus vehicula risus vel faucibus. Duis ut augue molestie, pellentesque dolor eu, iaculis lacus. Praesent aliquet sapien sed nisl rutrum, nec ornare metus fringilla. Quisque vestibulum sit amet ligula quis tempor. Aliquam gravida ex magna, sed fermentum purus tincidunt vel.
-
-                </p>
-
-                <p>
-                Curabitur ac ante sodales, mattis ligula ut, tempor lorem. Proin lobortis, leo a gravida sagittis, felis nisi luctus nunc, vitae vestibulum ante sem non magna. Aliquam dapibus, est sed pellentesque lacinia, nunc ipsum ullamcorper lorem, sit amet iaculis nibh arcu eget turpis. Aliquam eleifend ligula dolor, pretium molestie elit finibus at. Fusce fermentum, arcu eget varius rutrum, orci nisl sollicitudin sapien, et convallis elit ligula in quam. Etiam iaculis condimentum tincidunt. Vivamus neque lectus, interdum id viverra in, malesuada a ante. Sed tempus vehicula risus vel faucibus. Duis ut augue molestie, pellentesque dolor eu, iaculis lacus. Praesent aliquet sapien sed nisl rutrum, nec ornare metus fringilla. Quisque vestibulum sit amet ligula quis tempor. Aliquam gravida ex magna, sed fermentum purus tincidunt vel.
-
-                </p>
-
-                <p>
-                Curabitur ac ante sodales, mattis ligula ut, tempor lorem. Proin lobortis, leo a gravida sagittis, felis nisi luctus nunc, vitae vestibulum ante sem non magna. Aliquam dapibus, est sed pellentesque lacinia, nunc ipsum ullamcorper lorem, sit amet iaculis nibh arcu eget turpis. Aliquam eleifend ligula dolor, pretium molestie elit finibus at. Fusce fermentum, arcu eget varius rutrum, orci nisl sollicitudin sapien, et convallis elit ligula in quam. Etiam iaculis condimentum tincidunt. Vivamus neque lectus, interdum id viverra in, malesuada a ante. Sed tempus vehicula risus vel faucibus. Duis ut augue molestie, pellentesque dolor eu, iaculis lacus. Praesent aliquet sapien sed nisl rutrum, nec ornare metus fringilla. Quisque vestibulum sit amet ligula quis tempor. Aliquam gravida ex magna, sed fermentum purus tincidunt vel.
-
-                </p>
-            </p>
+            <h1 > Nome da Nota</h1>
+            {/* <button onClick={updateNote}>Save Note</button> */}
+            <Editor  editorState={editorState} onChange={setEditorState} blockStyleFn={style}> </Editor>
+            
 
         </Container>
     )
